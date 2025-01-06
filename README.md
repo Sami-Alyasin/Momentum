@@ -2,6 +2,11 @@
 
 **An End-to-End Data Science Predictive Modeling Project for Customer Conversion in Personal Auto Insurance**
 
+## Status
+**In Progress 🚧** 
+
+    Phase 3: Initial Data Exploration (EDA)
+
 ## Table of Contents
 - [Project Overview](#project-overview)
 - [Project Structure](#project-structure)
