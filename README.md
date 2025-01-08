@@ -5,7 +5,7 @@
 ## Status
 **In Progress 🚧** 
 
-    Phase 3: Initial Data Exploration (EDA)
+    Phase 4: Data Preprocessing
 
 ## Table of Contents
 - [Project Overview](#project-overview)
@@ -57,7 +57,7 @@ The data encompasses:
 
 ### Phase 3: Initial Data Exploration (EDA)
 
-### Phase 4: Data Preprocessing and Advanced EDA
+### Phase 4: Data Preprocessing
 
 ### Phase 5: Hypothesis Generation and Testing
 
