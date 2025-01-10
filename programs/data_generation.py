@@ -17,11 +17,18 @@ data['Is_Senior'] = (data['Age'] >= 55).astype(int)  # Flag for senior drivers
 
 # Marital Status -- Simulate married vs. non-married
 data['Marital_Status'] = np.random.choice(['Married', 'Single', 'Divorced', 'Widowed'], num_samples, p=[0.5, 0.3, 0.1, 0.1])
+data.loc[(data['Age']<21)&(data['Marital_Status'].isin(['Divorced','Widowed'])),'Marital_Status'] = np.random.choice(['Single', 'Married'],
+                                                                                    ((data['Age']<21)&(data['Marital_Status'].isin(['Divorced','Widowed']))).sum(),
+                                                                                    p=[0.9,0.1])
 data['Married_Premium_Discount'] = (data['Marital_Status'] == 'Married').astype(int) * 86
 
 # Prior Insurance Coverage -- Categories with longer coverage lowering premiums
 data['Prior_Insurance'] = np.random.choice(['<1 year', '1-5 years', '>5 years'], num_samples, p=[0.2, 0.5, 0.3])
+data.loc[(data['Prior_Insurance']=='>5 years')&(data['Age']<21),'Prior_Insurance'] = np.random.choice(['<1 year', '1-5 years'],
+                                                                                    ((data['Prior_Insurance']=='>5 years')&(data['Age']<21)).sum())
 data['Prior_Insurance_Premium_Adjustment'] = data['Prior_Insurance'].map({'<1 year': 100, '1-5 years': 50, '>5 years': 0})
+
+
 
 # Claims History -- Frequency and severity affect premiums
 data['Claims_Frequency'] = np.random.poisson(0.5, num_samples)  # Avg 0.5 claims per year
@@ -52,22 +59,28 @@ data['Source_of_Lead'] = np.random.choice(['Online', 'Agent', 'Referral'], num_s
 data['Time_Since_First_Contact'] = np.random.randint(1, 31, num_samples)
 
 # Conversion or Renewal Status -- Based on synthesized data correlations
-data['Conversion_Status'] = np.random.choice([0, 1], num_samples, p=[0.6, 0.4])  # 40% conversion rate
+data['Conversion_Status'] = np.random.choice([0, 1], num_samples, p=[0.6, 0.4])  # start with a 40% conversion rate
 
 # Website Activity -- Correlate engagement with conversion
 data['Website_Visits'] = np.random.poisson(5, num_samples)  # Avg 5 visits
-data['Conversion_Status'] = np.where(data['Website_Visits'] > 5, 1, data['Conversion_Status'])
+data.loc[data['Website_Visits']>5, 'Conversion_Status'] = np.random.choice([0,1],
+                                                                           (data['Website_Visits']>5).sum(),
+                                                                           p=[0.5,0.5])
 
 # Frequency and Type of Inquiries -- Randomized but weighted by conversion status
 data['Inquiries'] = np.random.poisson(2, num_samples)
-data['Conversion_Status'] = np.where(data['Inquiries'] > 3, 1, data['Conversion_Status'])
+data.loc[data['Inquiries']>3, 'Conversion_Status'] = np.random.choice([0,1],
+                                                                      (data['Inquiries']>3).sum(),
+                                                                      p=[0.5,0.5])
 
 # Number of Quotes Requested -- Simulate higher quotes for undecided customers
 data['Quotes_Requested'] = np.random.randint(1, 4, num_samples)
 
 # Time Elapsed Between Initial Quote and Purchase -- Correlate urgency with conversion
 data['Time_to_Conversion'] = np.random.randint(1, 15, num_samples)
-data['Conversion_Status'] = np.where(data['Time_to_Conversion'] <= 7, 1, data['Conversion_Status'])
+data.loc[data['Time_to_Conversion']<=7,'Conversion_Status'] = np.random.choice([0,1],
+                                                                               (data['Time_to_Conversion']<=7).sum(),
+                                                                               p=[0.4,0.6])
 
 # Credit Score or Credit-Based Insurance Score -- Normal distribution with correlation to premiums
 data['Credit_Score'] = np.clip(np.random.normal(715, 50, num_samples), 300, 850)
@@ -78,6 +91,16 @@ data['Premium_Amount'] += data['Premium_Adjustment_Credit']
 data['Region'] = np.random.choice(['Urban', 'Suburban', 'Rural'], num_samples, p=[0.5, 0.3, 0.2])
 data['Premium_Adjustment_Region'] = data['Region'].map({'Urban': 100, 'Suburban': 50, 'Rural': 0})
 data['Premium_Amount'] += data['Premium_Adjustment_Region']
+
+# Correlate lower than average premium amount with a higher conversion rate 
+data.loc[data['Premium_Amount']<data['Premium_Amount'].mean(),'Conversion_Status'] = np.random.choice([0,1],
+                                                                                  (data['Premium_Amount']<data['Premium_Amount'].mean()).sum(),
+                                                                                  p=[0.4,0.6])
+
+data.loc[data['Premium_Amount']<(data['Premium_Amount'].mean())-200,'Conversion_Status'] = np.random.choice([0,1],
+                                                                                  (data['Premium_Amount']<(data['Premium_Amount'].mean())-200).sum(),
+                                                                                  p=[0.3,0.7])
+
 
 # Export synthetic data to CSV
 data.to_csv('data/synthetic_insurance_data.csv', index=False)
