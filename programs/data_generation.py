@@ -83,7 +83,7 @@ data.loc[data['Time_to_Conversion']<=7,'Conversion_Status'] = np.random.choice([
                                                                                p=[0.4,0.6])
 
 # Credit Score or Credit-Based Insurance Score -- Normal distribution with correlation to premiums
-data['Credit_Score'] = np.clip(np.random.normal(715, 50, num_samples), 300, 850)
+data['Credit_Score'] = np.clip(np.random.normal(715, 50, num_samples), 300, 850).astype(int)
 data['Premium_Adjustment_Credit'] = np.where(data['Credit_Score'] > 700, -50, 50)
 data['Premium_Amount'] += data['Premium_Adjustment_Credit']
 
