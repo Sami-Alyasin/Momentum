@@ -5,7 +5,7 @@
 ## Status
 **In Progress 🚧** 
 
-    Phase 4: Data Preprocessing
+    Phase 5: Hypothesis Generation and Testing
 
 ## Table of Contents
 - [Project Overview](#project-overview)
